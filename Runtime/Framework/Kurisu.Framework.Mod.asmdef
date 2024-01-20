@@ -1,0 +1,25 @@
+{
+    "name": "Kurisu.Framework.Mod",
+    "rootNamespace": "Kurisu.Framework.Mod",
+    "references": [
+        "GUID:e61a2a07ba2680848ad23eef5b7c024b",
+        "GUID:f89fabfdb21850749a165533f8f47943"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "KURISU_FRAMEWORK"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.kurisu.akiframework",
+            "expression": "1.0.0",
+            "define": "KURISU_FRAMEWORK"
+        }
+    ],
+    "noEngineReferences": false
+}
