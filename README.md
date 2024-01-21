@@ -13,13 +13,18 @@ private async void LoadMod()
     await new ModImporter(new ModSetting()).LoadAllModsAsync(modInfos); 
 }
 ```
-
-## Example Mod Manager
-
-Example need install dependency [AkiFramework](https://github.com/AkiKurisu/AkiFramework)
-
 ## Editor Export
 
 Use Mod Exporter to create new addressable group and build only the mod group you edited.
 
 You can inherit ``CustomBuilder`` and add it to export config to write mod additional meta data such as game assets sub catalog into `ModInfo` or make a pre-process such as looping the group's addressable entries.
+
+## Build Notice
+
+If you build mod in source project, you should add `DefaultBundleNamePatchBuilder` to export config for preventing bundle name conflict 
+
+Reference https://docs.unity3d.com/Packages/com.unity.addressables@1.21/manual/MultiProject.html.
+
+## Example Mod Manager
+
+Example need install dependency [AkiFramework](https://github.com/AkiKurisu/AkiFramework)
