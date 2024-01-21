@@ -35,7 +35,7 @@ namespace Kurisu.Mod.Editor
         private static string ConfigGUIDKey => Application.productName + "_ModConfigGUID";
         private static string GetBuildPath(string modName)
         {
-            return Application.persistentDataPath + "/Export/" + modName.Replace(" ", string.Empty) + "-" + EditorUserBuildSettings.activeBuildTarget;
+            return ExportConstants.ExportPath + "/" + modName.Replace(" ", string.Empty) + "-" + EditorUserBuildSettings.activeBuildTarget;
         }
         [MenuItem("Tools/Mod Exporter")]
         public static void OpenEditor()
@@ -73,7 +73,7 @@ namespace Kurisu.Mod.Editor
             GUI.enabled = exportConfig.Validate();
             if (GUILayout.Button("Create Group", GUILayout.MinWidth(100)))
             {
-                var group = ModBuildUtility.GetOrCreateGroup($"Mod_{exportConfig.modName}");
+                var group = exportConfig.Group;
                 //Set not include in packed build
                 var schema = group.GetSchema<BundledAssetGroupSchema>();
                 schema.IncludeInBuild = false;
@@ -129,6 +129,7 @@ namespace Kurisu.Mod.Editor
                 exportConfig = LoadExportConfig();
                 exportConfigObject = new(exportConfig);
             }
+            exportConfigObject ??= new(exportConfig);
             var newConfig = EditorGUILayout.ObjectField("Export Config", exportConfig, typeof(ModExportConfig), false) as ModExportConfig;
             if (newConfig != exportConfig && newConfig != null)
             {
@@ -137,6 +138,17 @@ namespace Kurisu.Mod.Editor
                 EditorPrefs.SetString(ConfigGUIDKey, GetGUID(exportConfig));
             }
             DrawExportConfig();
+            if (exportConfig.customBuilders != null)
+            {
+                foreach (var customBuilder in exportConfig.customBuilders)
+                {
+                    if (!string.IsNullOrEmpty(customBuilder.Description))
+                    {
+                        GUILayout.Label($"Custom builder {customBuilder.GetType().Name} in use");
+                        GUILayout.Label(customBuilder.Description, new GUIStyle(GUI.skin.label) { wordWrap = true });
+                    }
+                }
+            }
         }
         private static ModExportConfig LoadExportConfig()
         {
@@ -165,10 +177,11 @@ namespace Kurisu.Mod.Editor
         private void Export()
         {
             string buildPath = GetBuildPath(exportConfig.modName);
+            exportConfig.lastExportPath = buildPath;
             InitDirectory(buildPath);
             BuildPipeline(buildPath);
             WritePipeline(buildPath);
-            if (BuildContent(buildPath))
+            if (BuildContent())
             {
                 Debug.Log($"<color=#3aff48>Exporter</color>: Export succeed, export Path: {buildPath}");
                 System.Diagnostics.Process.Start(ExportConstants.ExportPath);
@@ -196,11 +209,10 @@ namespace Kurisu.Mod.Editor
             var stream = JsonUtility.ToJson(info);
             File.WriteAllText(buildPath + "/ModConfig.cfg", stream);
         }
-        private bool BuildContent(string buildPath)
+        private bool BuildContent()
         {
             AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
-            exportConfig.lastExportPath = buildPath;
-            CleanupPipeline(buildPath);
+            CleanupPipeline();
             EditorUtility.SetDirty(exportConfig);
             AssetDatabase.SaveAssets();
             return string.IsNullOrEmpty(result.Error);
@@ -217,17 +229,18 @@ namespace Kurisu.Mod.Editor
             {
                 new PathBuilder()
             };
-            builders.AddRange(exportConfig.customBuilders);
+            if (exportConfig.customBuilders != null)
+                builders.AddRange(exportConfig.customBuilders);
             foreach (var builder in builders)
             {
                 builder.Build(exportConfig, dynamicBuildPath);
             }
         }
-        private void CleanupPipeline(string dynamicBuildPath)
+        private void CleanupPipeline()
         {
             foreach (var builder in builders)
             {
-                builder.Cleanup(exportConfig, dynamicBuildPath);
+                builder.Cleanup(exportConfig);
             }
         }
         private static string GetGUID(Object asset)

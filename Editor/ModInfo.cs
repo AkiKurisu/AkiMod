@@ -20,9 +20,10 @@ namespace Kurisu.Mod.Editor
         #endregion
         public Sprite ModIcon { get; set; }
         public string FullName => modName + '-' + version + '-' + apiVersion;
-        private Dictionary<string, string> metaData;
+        private Dictionary<string, string> metaData = new();
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
+            metaData ??= new();
             metaDataIndex = metaData.Keys.ToArray();
             metaDataContent = metaData.Values.ToArray();
         }
@@ -30,6 +31,8 @@ namespace Kurisu.Mod.Editor
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             metaData = new();
+            metaDataIndex ??= new string[0];
+            metaDataContent ??= new string[0];
             for (int i = 0; i < Mathf.Min(metaDataIndex.Length, metaDataContent.Length); ++i)
             {
                 metaData.Add(metaDataIndex[i], metaDataContent[i]);

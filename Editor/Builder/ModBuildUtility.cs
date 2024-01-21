@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 namespace Kurisu.Mod.Editor
@@ -24,8 +25,7 @@ namespace Kurisu.Mod.Editor
         /// Clean after build
         /// </summary>
         /// <param name="exportConfig"></param>
-        /// <param name="buildPath"></param>
-        void Cleanup(ModExportConfig exportConfig, string buildPath);
+        void Cleanup(ModExportConfig exportConfig);
     }
     public class ModBuildUtility
     {

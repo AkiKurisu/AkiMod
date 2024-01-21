@@ -3,12 +3,13 @@ namespace Kurisu.Mod.Editor
 {
     public abstract class CustomBuilder : ScriptableObject, IModBuilder
     {
+        public virtual string Description { get; }
         public virtual void Build(ModExportConfig exportConfig, string buildPath)
         {
 
         }
 
-        public virtual void Cleanup(ModExportConfig exportConfig, string buildPath)
+        public virtual void Cleanup(ModExportConfig exportConfig)
         {
 
         }

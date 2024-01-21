@@ -1,3 +1,4 @@
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 namespace Kurisu.Mod.Editor
 {
@@ -21,6 +22,13 @@ namespace Kurisu.Mod.Editor
             if (string.IsNullOrEmpty(version)) return false;
             if (string.IsNullOrEmpty(description)) return false;
             return true;
+        }
+        public AddressableAssetGroup Group
+        {
+            get
+            {
+                return ModBuildUtility.GetOrCreateGroup($"Mod_{modName}");
+            }
         }
     }
 }
